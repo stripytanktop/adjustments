@@ -1,0 +1,6 @@
+{
+  "note": "The live configuration is embedded in index_localised.html for this self-contained prototype. This companion file documents the intended external configuration shape for the next split-file build.",
+  "configuration_layers": ["general", "country_or_jurisdiction", "optional_sector", "optional_school_override"],
+  "locales_in_prototype": ["GENERAL", "AU_QLD", "AU_NSW", "AU_VIC", "UK_ENG", "US"],
+  "controls": ["region_name", "language", "plan_type_label", "plan_short", "framework_context", "fields", "ui", "actions", "generator", "references"]
+}
