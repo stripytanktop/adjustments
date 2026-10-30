@@ -42,7 +42,18 @@ function stepIndex(){if(location.hash==='#document')return 5;if(location.hash===
 function renderSteps(){const labels=[ui('choose_area'),ui('choose_observation'),ui('build_trial'),ui('trial_summary'),ui('review_trial'),ui('document')];let idx=stepIndex();steps.innerHTML=labels.map((x,i)=>`<div class="step ${i===idx?'active':i<idx?'done':''}"><span>${i<idx?'✓':i+1}</span>${x}</div>${i<labels.length-1?'<div class="sep">›</div>':''}`).join('')}
 function showToast(t){let x=document.querySelector('#toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function reset(){state.privacyMode=null;state.mode=null;state.className=null;state.studentId=null;state.studentName=null;state.recordId=null;state.area=null;state.barrier=null;state.selected=[];state.outcomes={};location.hash='';render()}
-function homeToolbar(title){return `<div class="toolbar"><button class="btn ghost" onclick="reset()">← Start again</button><span class="count">${esc(title)}</span></div>`}
+function canGoBack(){return Boolean(state.mode||state.className||state.studentId||state.area||state.barrier||state.selected.length||location.hash)}
+function goBackOnePage(){
+ if(location.hash==='#document'){location.hash='#review';return renderReview()}
+ if(location.hash==='#review'){location.hash='#summary';return renderSummary()}
+ if(location.hash==='#summary'){location.hash='';return renderStrategies()}
+ if(state.barrier){state.barrier=null;state.selected=[];state.outcomes={};location.hash='';return renderBarriers()}
+ if(state.area){state.area=null;state.barrier=null;state.selected=[];state.outcomes={};location.hash='';return renderAreas()}
+ if(state.mode==='new'&&(state.className||state.studentId)){state.className=null;state.studentId=null;state.studentName=null;return renderStudentPicker()}
+ if(state.mode){state.mode=null;return renderHome()}
+ renderHome()
+}
+function homeToolbar(title){return `<div class="toolbar"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="goBackOnePage()" ${canGoBack()?'':'disabled'}>← Back</button><button class="btn ghost" onclick="reset()">Start again</button></div><span class="count">${esc(title)}</span></div>`}
 const STORE_KEY='adjustmentFinderDemoTrialsV1';
 function getRecords(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'[]')}catch(e){return []}}
 function putRecords(records){localStorage.setItem(STORE_KEY,JSON.stringify(records))}
