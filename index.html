@@ -30,6 +30,18 @@ main{max-width:1160px;margin:24px auto;padding:0 20px 80px} .intro{background:wh
 /* Reserve space above fixed Add to trial action. */
 .strategy{padding-bottom:108px}.strategy .look{margin-bottom:8px}.strategy .selectrow{bottom:18px}
 @media(max-width:650px){.strategy{padding-bottom:104px}}
+
+/* Sticky progress anchor: orientation only, not navigation. */
+.progress{position:sticky;top:0;z-index:15;background:rgba(255,255,255,.97);border-bottom:1px solid #aebfcb;box-shadow:0 5px 18px rgba(23,54,93,.10);backdrop-filter:blur(8px)}
+.steps{padding:11px 20px 12px;gap:0;align-items:center;overflow-x:auto;scrollbar-width:thin}
+.step{position:relative;gap:9px;color:#597080;font-size:.9rem;font-weight:650;padding:7px 9px;border-radius:12px;min-height:42px}
+.step span{width:30px;height:30px;min-width:30px;border:2px solid #9aafbd;background:#fff;color:#50697a;font-size:.84rem}
+.step.done{color:#315b46}.step.done span{background:#eaf6ef;color:#17633f;border-color:#73a98a}
+.step.active{background:#e8f2f8;color:#17365d;font-weight:850}.step.active span{background:#17365d;color:#fff;border-color:#17365d;box-shadow:0 0 0 3px #d8e8f3}
+.step.active:after{content:'Current';font-size:.68rem;letter-spacing:.045em;text-transform:uppercase;color:#244f7a;background:#fff;border:1px solid #9db2c6;border-radius:999px;padding:2px 6px;margin-left:2px}
+.sep{color:#78909f;padding:0 2px;font-weight:800}
+@media(max-width:780px){.steps{padding:8px 12px}.step{font-size:.82rem;padding:6px}.step span{width:27px;height:27px;min-width:27px}.step.active:after{display:none}.sep{padding:0 1px}}
+@media print{.progress{display:none!important}}
 </style></head><body>
 <header class="top"><div class="topin"><div class="brandmark">A</div><div><h1>Adjustment Finder</h1><p class="subtitle">Notice a barrier. Choose a practical trial. Review what happens.</p></div><div class="locale-wrap"><div class="pill">Queensland / BCE prototype v0.7</div></div></div><div class="frameworkbar" id="frameworkBar"></div></header>
 <nav class="progress" aria-label="Progress"><div class="steps" id="steps"></div></nav>
@@ -47,7 +59,7 @@ function setLocale(){return}
 const state={privacyMode:null,mode:null,className:null,studentId:null,studentName:null,recordId:null,area:null,barrier:null,barriers:[],selected:[],strategyBarriers:{},outcomes:{},addingBarrier:false},app=document.querySelector('#app'),steps=document.querySelector('#steps');
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function stepIndex(){if(location.hash==='#document')return 5;if(location.hash==='#review')return 4;if(location.hash==='#summary')return 3;return state.barrier?2:state.area?1:0};
-function renderSteps(){const labels=[ui('choose_area'),ui('choose_observation'),ui('build_trial'),ui('trial_summary'),ui('review_trial'),ui('document')];let idx=stepIndex();steps.innerHTML=labels.map((x,i)=>`<div class="step ${i===idx?'active':i<idx?'done':''}"><span>${i<idx?'✓':i+1}</span>${x}</div>${i<labels.length-1?'<div class="sep">›</div>':''}`).join('')}
+function renderSteps(){const labels=[ui('choose_area'),ui('choose_observation'),ui('build_trial'),ui('trial_summary'),ui('review_trial'),ui('document')];let idx=stepIndex();steps.setAttribute('aria-label',`Progress. Current step: ${labels[idx]}`);steps.innerHTML=labels.map((x,i)=>`<div class="step ${i===idx?'active':i<idx?'done':''}" ${i===idx?'aria-current="step"':''}><span>${i<idx?'✓':i+1}</span>${x}</div>${i<labels.length-1?'<div class="sep" aria-hidden="true">›</div>':''}`).join('')}
 function showToast(t){let x=document.querySelector('#toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
 function reset(){state.privacyMode=null;state.mode=null;state.className=null;state.studentId=null;state.studentName=null;state.recordId=null;state.area=null;state.barrier=null;state.barriers=[];state.selected=[];state.strategyBarriers={};state.outcomes={};state.addingBarrier=false;location.hash='';render()}
 function canGoBack(){return Boolean(state.mode||state.className||state.studentId||state.area||state.barrier||state.selected.length||location.hash)}
